@@ -450,6 +450,10 @@ cli/_all_distributions/main
 cli/${RELEASE}/main
 "
 
+ROS2_SEARCH_RELATIVE_DIRS="
+ros2/${RELEASE}/humble
+"
+
 PACKAGES_SEARCH_ROOT_ABSOLUTE_DIRS="
 ${EXTER}/packages
 ${EXTER}/config/optional/_any_board/_packages
@@ -541,6 +545,10 @@ aggregate_all_cli() {
 	aggregate_all_root_rel_sub "${1}" "${2}" "${CLI_SEARCH_RELATIVE_DIRS}" "${sub_dirs_to_check}"
 }
 
+aggregate_all_ros2() {
+	aggregate_all_root_rel_sub "${1}" "${2}" "${ROS2_SEARCH_RELATIVE_DIRS}" "."
+}
+
 aggregate_all_desktop() {
 	aggregate_all_root_rel_sub "${1}" "${2}" "${DESKTOP_ENVIRONMENTS_SEARCH_RELATIVE_DIRS}" "."
 	aggregate_all_root_rel_sub "${1}" "${2}" "${DESKTOP_APPGROUPS_SEARCH_RELATIVE_DIRS}" "${DESKTOP_APPGROUPS_SELECTED}"
@@ -572,6 +580,15 @@ if [[ $BUILD_DESKTOP == "yes" ]]; then
 	echo -e "\nGroups selected ${DESKTOP_APPGROUPS_SELECTED} -> PACKAGES :" >> "${LOG_OUTPUT_FILE}"
 	show_checklist_variables PACKAGE_LIST_DESKTOP
 fi
+
+if [[ $BUILD_ROS2 == "yes" ]]; then
+	PACKAGE_LIST_ROS2+="$(one_line aggregate_all_ros2 "packages" " ")"
+	echo -e "\nGroups selected ${ROS2_APPGROUPS_SELECTED} -> PACKAGES :" >> "${LOG_OUTPUT_FILE}"
+	show_checklist_variables PACKAGE_LIST_ROS2
+fi
+# echo "$PACKAGE_LIST_ROS2"
+# echo "exit"
+# exit
 unset LOG_OUTPUT_FILE
 
 DEBIAN_MIRROR='deb.debian.org/debian'
