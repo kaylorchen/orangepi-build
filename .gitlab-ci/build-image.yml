@@ -6,7 +6,6 @@ build-image:
   image: 
     name: orangepi-compile:latest
     pull_policy: if-not-present
-    volumes: ["dev:dev"]
   stage: build-image
   tags:
     - docker-amd64-privileged
