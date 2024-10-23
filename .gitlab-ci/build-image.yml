@@ -1,0 +1,43 @@
+build-image:
+  variables:
+    GIT_STRATEGY: clone
+    GIT_FETCH_EXTRA_FLAGS: --prune --prune-tags
+    FF_DISABLE_UMASK_FOR_DOCKER_EXECUTOR: 1
+  image: 
+    name: orangepi-compile:latest
+    pull_policy: if-not-present
+    volumes: ["dev:dev"]
+  stage: build-image
+  tags:
+    - docker-amd64-privileged
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+  artifacts:
+    paths:
+      - .gitlab-ci/artifacts
+    expire_in: 1 week
+  script:
+    - set -xe
+    - ln -snf /workspace/toolchains toolchains
+    - SOURCE_ROOT=$(pwd)
+    - realpath ${SOURCE_ROOT}
+    - echo "Build image ..."
+    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@192.168.4.11/amr/orangepi/userpatches.git --depth 1
+    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@192.168.4.11/amr/orangepi/external/evalcache.git --depth 1 external/cache/sources/evalcache
+    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@192.168.4.11/amr/orangepi/external/firmware.git --depth 1 external/cache/sources/orangepi-firmware-git
+    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@192.168.4.11/amr/orangepi/external/ohmyzsh.git --depth 1 external/cache/sources/oh-my-zsh
+    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@192.168.4.11/amr/orangepi/external/rkbin.git --depth 1 external/cache/sources/rkbin-tools
+    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@192.168.4.11/amr/orangepi/external/wiringOP-Python.git --depth 1 external/cache/sources/wiringOP-Python/next
+    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@192.168.4.11/amr/orangepi/external/wiringOP.git --depth 1 external/cache/sources/wiringOP-Python/next/wiringOP
+    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@192.168.4.11/amr/orangepi/external/wiringOP.git --depth 1 external/cache/sources/wiringOP/next
+    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@192.168.4.11/amr/orangepi/external/rk-rootfs-build.git --depth 1 external/cache/sources/rk35xx_packages
+    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@192.168.4.11/amr/orangepi/u-boot.git --depth 1 u-boot/v2017.09-rk3588
+    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@192.168.4.11/amr/orangepi/kernel.git --depth 1 kernel/orange-pi-5.10-rk35xx
+    - time_var=$(date +"%Y%m%d_%H%M%S")
+    - sudo ./build.sh  BOARD=orangepicm5 BRANCH=legacy BUILD_OPT=image RELEASE=jammy BUILD_MINIMAL=no BUILD_DESKTOP=no KERNEL_CONFIGURE=no COMPRESS_OUTPUTIMAGE=sha,gpg,img
+    - image=$(find ./output -type f -name "*.img")
+    - mkdir -pv ${SOURCE_ROOT}/.gitlab-ci/artifacts/${CI_COMMIT_SHA}
+    - mv ${image} ${SOURCE_ROOT}/.gitlab-ci/artifacts/${CI_COMMIT_SHA}/orangepicm5-${time_var}.img
+    - gzip ${SOURCE_ROOT}/.gitlab-ci/artifacts/${CI_COMMIT_SHA}/orangepicm5-${time_var}.img
+    - tree ${SOURCE_ROOT}/.gitlab-ci/artifacts/${CI_COMMIT_SHA}/
+
