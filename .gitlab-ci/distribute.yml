@@ -17,8 +17,8 @@ distribute:
   script:
     - find .gitlab-ci/artifacts/${CI_COMMIT_SHA} -type f
     - |+
-      if [ -d .gitlab-ci/artifacts/${CI_COMMIT_SHA}/${CI_COMMIT_BRANCH}/jammy/ ]; then
-        pushd .gitlab-ci/artifacts/${CI_COMMIT_SHA}/${CI_COMMIT_BRANCH}/jammy/
+      if [ -d .gitlab-ci/artifacts/${CI_COMMIT_SHA} ]; then
+        pushd .gitlab-ci/artifacts/${CI_COMMIT_SHA}
         mv -v *.img.gz /mnt/apt/aptly/public/images
         popd
       fi
