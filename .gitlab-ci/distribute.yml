@@ -1,0 +1,24 @@
+spec:
+  inputs:
+    tags:
+      default: amd64
+---
+
+distribute:
+  variables:
+    GIT_STRATEGY: none
+    GIT_CHECKOUT: "false"
+    RUNNER_TAGS: test
+  stage: distribute
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+  tags:
+    - $[[ inputs.tags ]]
+  script:
+    - find .gitlab-ci/artifacts/${CI_COMMIT_SHA} -type f
+    - |+
+      if [ -d .gitlab-ci/artifacts/${CI_COMMIT_SHA}/${CI_COMMIT_BRANCH}/jammy/ ]; then
+        pushd .gitlab-ci/artifacts/${CI_COMMIT_SHA}/${CI_COMMIT_BRANCH}/jammy/
+        mv -v *.img.gz /mnt/apt/aptly/public/images
+        popd
+      fi

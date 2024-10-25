@@ -1,5 +1,7 @@
 include:
   - local: '.gitlab-ci/build-image.yml'
+  - local: '.gitlab-ci/distribute.yml'
 
 stages:
   - build-image
+  - distribute

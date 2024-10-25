@@ -1,3 +1,12 @@
+## 本仓库是镜像生成仓库
+镜像生成后，可以访问 http://jialin.hunters-tech.com:8101/images/ 下载
+默认的账号和密码分别是
+```bash
+hunter:jialin
+root:jialin
+```
+
+
 ## Supported boards
 
 Soc | Boards |
