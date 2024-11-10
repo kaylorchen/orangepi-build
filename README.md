@@ -5,6 +5,8 @@
 hunter:jialin
 root:jialin
 ```
+Linux的升级方法是在系统中运行“reboot loader”或者按住maskrom按键启动进入Maskrom模式。
+然后请查看当前工程中的upgrade_tool目录进行升级
 
 
 ## Supported boards
