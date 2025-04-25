@@ -505,6 +505,22 @@ CUSTOM_KERNEL_CONFIG
 		grep -i error $DEST/${LOG_SUBPATH}/compilation.log
 		exit_with_error "Kernel was not built" "@host"
 	fi
+	if [ ! -z "$ETHERCAT_SRC" ]; then
+		SRC_PATH=$(pwd)
+		echo "SRC_PATH = ${SRC_PATH}"
+		echo "ETHERCAT_SRC = ${ETHERCAT_SRC}"
+    display_alert "Build ethercat"
+		cd  ${ETHERCAT_SRC}
+		rm install -rf
+		./bootstrap
+		./configure --host=aarch64-linux-gnu CC=$toolchain/${KERNEL_COMPILER}gcc CXX=$toolchain/${KERNEL_COMPILER}g++ AR=$toolchain/${KERNEL_COMPILER}ar --with-linux-dir=${SRC_PATH} --prefix=$(pwd)/install/usr --enable-8139too=no --enable-r8169=yes
+		make ARCH=arm64 CROSS_COMPILE=$toolchain/${KERNEL_COMPILER} -j${nproc} modules
+		make -j
+		make modules_install INSTALL_MOD_PATH=$(pwd)/modules
+		rm -rf modules/lib/modules/*/modules.*
+		dpkg-buildpackage -j -us -uc -aarm64 -b
+		cd ${SRC_PATH}
+	fi
 
 	# different packaging for 4.3+
 	if linux-version compare "${version}" ge 4.3; then
@@ -535,6 +551,8 @@ CUSTOM_KERNEL_CONFIG
 		${PROGRESS_LOG_TO_FILE:+' | tee -a $DEST/${LOG_SUBPATH}/compilation.log'} \
 		${OUTPUT_DIALOG:+' | dialog --backtitle "$backtitle" --progressbox "Creating kernel packages..." $TTY_Y $TTY_X'} \
 		${OUTPUT_VERYSILENT:+' >/dev/null 2>/dev/null'}
+	
+	display_alert "Built packages"
 
 	cd .. || exit
 	# remove firmare image packages here - easier than patching ~40 packaging scripts at once
