@@ -509,7 +509,7 @@ CUSTOM_KERNEL_CONFIG
 		SRC_PATH=$(pwd)
 		echo "SRC_PATH = ${SRC_PATH}"
 		echo "ETHERCAT_SRC = ${ETHERCAT_SRC}"
-    display_alert "Build ethercat"
+		display_alert "Build ethercat"
 		cd  ${ETHERCAT_SRC}
 		rm install -rf
 		./bootstrap
@@ -517,8 +517,8 @@ CUSTOM_KERNEL_CONFIG
 		make ARCH=arm64 CROSS_COMPILE=$toolchain/${KERNEL_COMPILER} -j${nproc} modules
 		make -j
 		make modules_install INSTALL_MOD_PATH=$(pwd)/modules
-		rm -rf modules/lib/modules/*/modules.*
 		dpkg-buildpackage -j -us -uc -aarm64 -b
+		bash ./create_modules_deb.sh $(pwd)/modules
 		cd ${SRC_PATH}
 	fi
 
