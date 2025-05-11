@@ -251,6 +251,7 @@ if [[ -z $BOARD ]]; then
 	#options+=("orangepir2s"                  "Ky X1 octa core 2-8GB RAM 2.5GBE USB3 eMMC")
 	#options+=("orangepir1plus"              "Rockchip  RK3328 quad core 1GB RAM 2xGBE USB2 SPI")
 	#options+=("orangepi3plus"              "Amlogic S905D3 quad core 2/4GB RAM SoC eMMC GBE USB3 SPI WiFi/BT")
+	options+=("lubancat5io"                  "Rockchip RK3588 Lubancat 5 IO Board")
 
 	menustr="Please choose a Board."
 	BOARD=$(whiptail --title "${titlestr}" --backtitle "${backtitle}" \
